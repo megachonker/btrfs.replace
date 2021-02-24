@@ -40,13 +40,27 @@ noms="$(basename "$ligne")"
 echo noms fichier $noms ; read
 #on recherche le path du meme fichier en local
 src="$(find $location -name "$noms")"
-echo source $src ; read
+if [ -f "$src" ]
+then
+	echo source $src ; read
+else
+	echo source incorect: $src
+	exit 3
+fi
+
 #on modifie le path de destination par le  pts de montage ne local
 dst="$(echo $i |sed s/[^/]*/"\/mnt\/"$montage/)"
-echo destination $dst ; read
+if [ -f "$dst" ]
+then
+	echo destination $dst ; read
+else
+	echo destination inexistante: $dst
+	exit 4
+fi
 
 #on syncronise
 #rsync --progress -v "$src" "$dst"
 echo "$src"=>"$dst"
 cp -iv "$src" "$dst"
+
 done < $listcorupted
