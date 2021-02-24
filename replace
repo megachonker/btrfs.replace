@@ -12,7 +12,6 @@ fi
 
 listcorupted=$1
 
-
 #a partire de ou on cherche les correspondance
 location=$PWD
 
@@ -32,7 +31,7 @@ else
 fi
 
 #on va énumerer  chaque ligne du fichier dans fichier
-while read ligne;
+for ligne in $(cat $listcorupted)
 do
         echo -----------------------------------------------------------
         #on obtien le noms du fichier (on se débarase du path)
@@ -49,14 +48,18 @@ do
                 then
                         #on syncronise
                         #rsync --progress -v "$src" "$dst"
-                        read -p "$src => $dst" -n 1 -r
-                        [[ $REPLY =~ [Yy] ]] &&  cp -v "$src" "$dst" || echo abord
+                        if [ -z $3 ]
+                        then
+                                read -p "$src => $dst" -n 1 -r
+                                [[ $REPLY =~ [Yy] ]] &&  cp -v "$src" "$dst" || echo abord
+                        else
+                                cp -v "$src" "$dst"
+                        fi
+
                 else
                         echo destination inexistante: $dst
                 fi
         else
                 echo Nexiste pas en local : $src
         fi
-
-
-done < $listcorupted
+done
