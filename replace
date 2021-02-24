@@ -1,14 +1,13 @@
 #!/bin/bash
 
-
-#check si le journal est accessible et existant 
+#check si le journal est accessible et existant
 if [ -f "$1" ]
 then
-	echo fichier journal ok
+        echo fichier journal ok
 else
-	echo fichier inconue
-	echo generate with "journalctl --since -8h|grep  -Po "(?<=path: ).*"|grep -Po ".*(?=\))"|sort|uniq > listcorupted"
-	exit 1
+        echo fichier inconue
+        echo generate with 'journalctl --since -8h|grep  -Po "(?<=path: ).*"|grep -Po ".*(?=\))"|sort|uniq > listcorupted'
+        exit 1
 fi
 
 listcorupted=$1
@@ -17,50 +16,47 @@ listcorupted=$1
 #a partire de ou on cherche les correspondance
 location=$PWD
 
-#point de montage 
+#point de montage
 montage=$2
 #on test pour la 2eme ligne
-exemple="$(sed -n 2p $listcorupted|sed s/[^/]*/"\/mnt\/"$montage/))"
+exemple="$(sed -n 2p $listcorupted|sed s/[^/]*/"\/mnt\/"$montage/)"
 
 #si mon chemain est joignable
 if [ -f "$exemple" ]
 then
-	echo ptsMontage/FichierOk
+        echo ptsMontage/FichierOk
 else
-	echo PTSinvalide
-	echo $exemple injoignable
-	exit 2
+        echo PTSinvalide
+        echo $exemple injoignable
+        exit 2
 fi
 
 #on va énumerer  chaque ligne du fichier dans fichier
 while read ligne;
 do
-#on obtien le noms du fichier (on se débarase du path) 
-noms="$(basename "$ligne")"
-echo noms fichier $noms ; read
-#on recherche le path du meme fichier en local
-src="$(find $location -name "$noms")"
-if [ -f "$src" ]
-then
-	echo source $src ; read
-else
-	echo source incorect: $src
-	exit 3
-fi
+        echo -----------------------------------------------------------
+        #on obtien le noms du fichier (on se débarase du path)
+        noms="$(basename "$ligne")"
+        echo noms fichier $noms
+        #on recherche le path du meme fichier en local
+        src="$(find "$location/" -name "$noms")"
+        if [ -f "$src" ]
+        then
+                echo source $src
+                #on modifie le path de destination par le  pts de montage ne local
+                dst="$(echo $ligne |sed s/[^/]*/"\/mnt\/"$montage/)"
+                if [ -f "$dst" ]
+                then
+                        #on syncronise
+                        #rsync --progress -v "$src" "$dst"
+                        read -p "$src => $dst" -n 1 -r
+                        [[ $REPLY =~ [Yy] ]] &&  cp -v "$src" "$dst" || echo abord
+                else
+                        echo destination inexistante: $dst
+                fi
+        else
+                echo Nexiste pas en local : $src
+        fi
 
-#on modifie le path de destination par le  pts de montage ne local
-dst="$(echo $i |sed s/[^/]*/"\/mnt\/"$montage/)"
-if [ -f "$dst" ]
-then
-	echo destination $dst ; read
-else
-	echo destination inexistante: $dst
-	exit 4
-fi
-
-#on syncronise
-#rsync --progress -v "$src" "$dst"
-echo "$src"=>"$dst"
-cp -iv "$src" "$dst"
 
 done < $listcorupted
