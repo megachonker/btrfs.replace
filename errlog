@@ -1,0 +1,7 @@
+if [ -f "$1" ]
+then
+	temps="$1"h
+else
+  temps=8h
+fi
+journalctl --since -8h|grep  -Po "(?<=path: ).*"|grep -Po ".*(?=\))"|sort|uniq > listcorupted
