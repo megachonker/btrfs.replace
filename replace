@@ -29,7 +29,8 @@ else
         echo $exemple injoignable
         exit 2
 fi
-
+IFSback=$IFS
+IFS=$'\n'
 #on va énumerer  chaque ligne du fichier dans fichier
 for ligne in $(cat $listcorupted)
 do
@@ -63,3 +64,4 @@ do
                 echo Nexiste pas en local : $src
         fi
 done
+IFS=$IFSback
