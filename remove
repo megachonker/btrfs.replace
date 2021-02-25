@@ -1,0 +1,1 @@
+IFS=$'\n' ; for a in $(cat ~/LOG|grep MOUNT); do find -name $(basename $a) -exec rm {} +; done
