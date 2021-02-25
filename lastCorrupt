@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ -z  $1 ]
+then
+        last=1m
+else
+        last=${1}h
+fi
+
+IFSback=$IFS
+IFS=$'\n'
+for message in $(journalctl --since -${last}|grep BTRFS);
+do
+date=$(cut -d " " -f 1-3 <<< $message)
+inode=$(grep -P "(?<=ino )[0-9]*" -o <<< $message)
+path=$(btrfs inspect-internal inode-resolve $inode PTSMONTAGE)
+echo $date $path
+done |uniq -s 20
+IFS=$IFSback
