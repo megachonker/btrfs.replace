@@ -5,3 +5,4 @@ else
   temps=8h
 fi
 journalctl --since -8h|grep  -Po "(?<=path: ).*"|grep -Po ".*(?=\))"|sort|uniq > listcorupted
+#find POPOPO/ -type f -exec cat {} ^C/dev/null \; 2> >(tee REPARER  2>)
