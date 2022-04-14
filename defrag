@@ -2,7 +2,7 @@
 #get les fichier fragmenter du disque
 time find  /srv/DATA/ -type f -exec filefrag {} + > rawfraglist
 #on trie les plus fragmenter
-pv rawfraglist|sed -E 's/^(.*):.([1-9]\d*).*$/\2:\1/'|sort -r -n > fraglist
+pv rawfraglist|sed -E 's/^(.*):.([1-9]*\d*).*$/\2:\1/'|sort -r -n > fraglist
 #on garde juste les chemain
 grep "^[0-9]*:" fraglist| cut -d: -f2  > listefile
 #on fait une bar de progress et on defragmente en paralle
