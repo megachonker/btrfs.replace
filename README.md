@@ -15,3 +15,6 @@ is  the command to create the  log file  for feeding  remplace
 
 ## remove
 if you  whant to  destroy file  from a  list
+
+# defrag
+defragmente les fichier les plus fragmenter d'apres filefrag
